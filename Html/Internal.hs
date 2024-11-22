@@ -4,13 +4,13 @@ newtype Html = Html String
 
 newtype Structure = Structure String
 
+instance Semigroup Structure where
+  (<>) (Structure s) (Structure t) = Structure (s <> t)
+
 type Title = String
 
 getStructureString :: Structure -> String
 getStructureString (Structure str) = str
-
-append_ :: Structure -> Structure -> Structure
-append_ (Structure s) (Structure t) = Structure (s <> t)
 
 render :: Html -> String
 render (Html s) = s
