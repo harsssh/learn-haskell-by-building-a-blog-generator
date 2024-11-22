@@ -22,8 +22,9 @@ html_ title content =
   Html
     ( el
         "html"
-        (el "head" (el "title" title))
-        <> el "body" (getStructureString content)
+        ( el "head" (el "title" title)
+            <> el "body" (getStructureString content)
+        )
     )
 
 p_ :: String -> Structure
