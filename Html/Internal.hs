@@ -35,6 +35,9 @@ p_ = Structure . el "p" . escape
 h1_ :: String -> Structure
 h1_ = Structure . el "h1" . escape
 
+ul_ :: [Structure] -> Structure
+ul_ = Structure . el "ul" . concatMap (el "li" . getStructureString)
+
 escape :: String -> String
 escape =
   let escapeChar c =
