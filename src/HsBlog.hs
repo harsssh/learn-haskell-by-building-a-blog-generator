@@ -1,9 +1,9 @@
-{-# LANGUAGE LambdaCase #-}
+module HsBlog (main, process) where
 
 import Control.Monad qualified
-import Convert (convert)
-import Html
-import Markup qualified
+import HsBlog.Convert (convert)
+import qualified HsBlog.Markup as Markup
+import qualified HsBlog.Html as Html
 import System.Directory (doesFileExist)
 import System.Environment (getArgs)
 
@@ -24,7 +24,7 @@ main = do
       putStrLn "Usage: runghc Main.hs [-- <input-file> <output-file>]"
 
 process :: Html.Title -> String -> String
-process title = render . convert title . Markup.parse
+process title = Html.render . convert title . Markup.parse
 
 whenIO :: IO Bool -> IO () -> IO ()
 whenIO cond action = do
