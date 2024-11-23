@@ -1,4 +1,6 @@
-module Html.Internal where
+module HsBlog.Html.Internal where
+
+import GHC.Natural (Natural)
 
 newtype Html = Html String
 
@@ -6,6 +8,9 @@ newtype Structure = Structure String
 
 instance Semigroup Structure where
   (<>) (Structure s) (Structure t) = Structure (s <> t)
+
+instance Monoid Structure where
+  mempty = Structure ""
 
 type Title = String
 
@@ -34,6 +39,11 @@ p_ = Structure . el "p" . escape
 
 h1_ :: String -> Structure
 h1_ = Structure . el "h1" . escape
+
+h_ :: Natural -> String -> Structure
+h_ n =
+  let tag = "h" <> show n
+   in Structure . el tag . escape
 
 ul_ :: [Structure] -> Structure
 ul_ = Structure . el "ul" . concatMap (el "li" . getStructureString)
