@@ -1,3 +1,6 @@
-# Learn Haskell by building a blog generator
+# hs-blog
 
-https://learn-haskell.blog
+One day it will be a static blog generator.
+
+[Read the book](https://learn-haskell.blog).
+
