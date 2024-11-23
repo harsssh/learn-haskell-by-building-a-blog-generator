@@ -11,7 +11,7 @@ cabal-version:      3.0
 --   http://haskell.org/cabal/users-guide/
 --
 -- The name of the package.
-name:               learn-haskell-by-building-a-blog-generator
+name: hs-blog
 
 -- The package version.
 -- See the Haskell package versioning policy (PVP) for standards
@@ -79,7 +79,7 @@ library
     -- Directories containing source files.
     hs-source-dirs:   src
 
-executable learn-haskell-by-building-a-blog-generator
+executable hs-blog-gen
     -- Import common warning flags.
     import: common-settings
 
@@ -95,12 +95,12 @@ executable learn-haskell-by-building-a-blog-generator
     -- Other library packages from which modules are imported.
     build-depends:
         base ^>=4.17.2.1,
-        learn-haskell-by-building-a-blog-generator
+        hs-blog
 
     -- Directories containing source files.
     hs-source-dirs:   app
 
-test-suite learn-haskell-by-building-a-blog-generator-test
+test-suite hs-blog-test
     -- Import common warning flags.
     import: common-settings
 
@@ -122,4 +122,4 @@ test-suite learn-haskell-by-building-a-blog-generator-test
     -- Test dependencies.
     build-depends:
         base ^>=4.17.2.1,
-        learn-haskell-by-building-a-blog-generator
+        hs-blog
