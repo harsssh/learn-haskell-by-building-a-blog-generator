@@ -9,14 +9,13 @@ newtype Structure = Structure String
 instance Semigroup Structure where
   (<>) (Structure s) (Structure t) = Structure (s <> t)
 
+instance Monoid Structure where
+  mempty = Structure ""
+
 type Title = String
 
 getStructureString :: Structure -> String
 getStructureString (Structure str) = str
-
-empty_ :: Structure
-empty_ = Structure ""
-
 render :: Html -> String
 render (Html s) = s
 
@@ -67,5 +66,5 @@ escape =
    in concatMap escapeChar
 
 concatStructure :: [Structure] -> Structure
-concatStructure = foldr (<>) empty_
+concatStructure = mconcat
 
