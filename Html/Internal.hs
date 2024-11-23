@@ -14,6 +14,9 @@ type Title = String
 getStructureString :: Structure -> String
 getStructureString (Structure str) = str
 
+empty_ :: Structure
+empty_ = Structure ""
+
 render :: Html -> String
 render (Html s) = s
 
@@ -62,3 +65,7 @@ escape =
           '\'' -> "&#39;"
           _ -> [c]
    in concatMap escapeChar
+
+concatStructure :: [Structure] -> Structure
+concatStructure = foldr (<>) empty_
+
