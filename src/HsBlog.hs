@@ -1,43 +1,17 @@
-module HsBlog (main, process) where
+module HsBlog (process, convertSingle, convertDirectory) where
 
-import Control.Monad qualified
 import HsBlog.Convert (convert)
 import qualified HsBlog.Markup as Markup
 import qualified HsBlog.Html as Html
-import System.Directory (doesFileExist)
-import System.Environment (getArgs)
-
-main :: IO ()
-main = do
-  args <- getArgs
-  case args of
-    [] -> do
-      content <- getContents
-      putStrLn $ process "Empty title" content
-    [infile, outfile] -> do
-      exists <- doesFileExist outfile
-      let writeResult = readFile infile >>= writeFile outfile
-      if exists
-        then whenIO confirm writeResult
-        else writeResult
-    _ ->
-      putStrLn "Usage: runghc Main.hs [-- <input-file> <output-file>]"
+import System.IO (Handle, hGetContents, hPutStrLn)
 
 process :: Html.Title -> String -> String
 process title = Html.render . convert title . Markup.parse
 
-whenIO :: IO Bool -> IO () -> IO ()
-whenIO cond action = do
-  result <- cond
-  Control.Monad.when result action
+convertSingle :: Html.Title -> Handle -> Handle -> IO()
+convertSingle title input output = do
+  content <- hGetContents input
+  hPutStrLn output $ process title content
 
-confirm :: IO Bool
-confirm = do
-  putStrLn "Are you sure? (y/n)"
-  answer <- getLine
-  case answer of
-    "y" -> pure True
-    "n" -> pure False
-    _ -> do
-      putStrLn "Invalid response. use y or n"
-      confirm
+convertDirectory :: FilePath -> FilePath -> IO()
+convertDirectory = error "Not implemented"
