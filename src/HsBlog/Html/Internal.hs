@@ -39,9 +39,6 @@ instance Monoid Structure where
 p_ :: Content -> Structure
 p_ = Structure . el "p" . getContentString
 
-h1_ :: Content -> Structure
-h1_ = Structure . el "h1" . getContentString
-
 h_ :: Natural -> Content -> Structure
 h_ n =
   let tag = "h" <> show n
