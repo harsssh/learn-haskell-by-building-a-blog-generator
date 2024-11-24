@@ -105,12 +105,13 @@ executable hs-blog-gen
     -- Directories containing source files.
     hs-source-dirs:   app
 
-test-suite hs-blog-test
+test-suite hs-blog-gen-test
     -- Import common warning flags.
     import: common-settings
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:
+        MarkupParsingSpec
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
@@ -122,9 +123,18 @@ test-suite hs-blog-test
     hs-source-dirs:   test
 
     -- The entrypoint to the test suite.
-    main-is:          Main.hs
+    main-is: Spec.hs
 
     -- Test dependencies.
     build-depends:
         base ^>=4.17.2.1,
+        hspec,
+        hspec-discover,
+        raw-strings-qq,
         hs-blog
+
+    ghc-options:
+        -O -threaded -rtsopts -with-rtsopts=-N
+
+    build-tool-depends:
+        hspec-discover:hspec-discover
