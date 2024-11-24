@@ -2,6 +2,7 @@ module Main where
 
 import Control.Exception (bracket)
 import HsBlog qualified
+import HsBlog.Directory qualified
 import OptParse
 import System.Directory (doesFileExist)
 import System.Exit (exitFailure)
@@ -12,7 +13,7 @@ main = do
   options <- parse
   case options of
     ConvertDir input output ->
-      HsBlog.convertDirectory input output
+      HsBlog.Directory.convertDirectory input output
     ConvertSingle input output -> do
       let (title, withInputHandle) =
             case input of

@@ -1,4 +1,4 @@
-module HsBlog (process, convertSingle, convertDirectory) where
+module HsBlog (process, convertSingle) where
 
 import HsBlog.Convert (convert)
 import qualified HsBlog.Markup as Markup
@@ -12,6 +12,3 @@ convertSingle :: Html.Title -> Handle -> Handle -> IO()
 convertSingle title input output = do
   content <- hGetContents input
   hPutStrLn output $ process title content
-
-convertDirectory :: FilePath -> FilePath -> IO()
-convertDirectory = error "Not implemented"
