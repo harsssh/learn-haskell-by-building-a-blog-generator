@@ -2,27 +2,17 @@ module HsBlog.Html.Internal where
 
 import GHC.Natural (Natural)
 
+-- Types
+
 newtype Html = Html String
+
+newtype Content = Content String
 
 newtype Structure = Structure String
 
-instance Semigroup Structure where
-  (<>) (Structure s) (Structure t) = Structure (s <> t)
-
-instance Monoid Structure where
-  mempty = Structure ""
-
 type Title = String
 
-getStructureString :: Structure -> String
-getStructureString (Structure str) = str
-
-render :: Html -> String
-render (Html s) = s
-
-el :: String -> String -> String
-el tag content =
-  "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
+-- EDSL
 
 html_ :: Title -> Structure -> Html
 html_ title content =
@@ -34,16 +24,25 @@ html_ title content =
         )
     )
 
-p_ :: String -> Structure
-p_ = Structure . el "p" . escape
+-- Render
 
-h1_ :: String -> Structure
-h1_ = Structure . el "h1" . escape
+render :: Html -> String
+render (Html s) = s
 
-h_ :: Natural -> String -> Structure
+-- Structure
+instance Semigroup Structure where
+  (<>) (Structure s) (Structure t) = Structure (s <> t)
+
+instance Monoid Structure where
+  mempty = Structure ""
+
+p_ :: Content -> Structure
+p_ = Structure . el "p" . getContentString
+
+h_ :: Natural -> Content -> Structure
 h_ n =
   let tag = "h" <> show n
-   in Structure . el tag . escape
+   in Structure . el tag . getContentString
 
 ul_ :: [Structure] -> Structure
 ul_ = Structure . el "ul" . concatMap (el "li" . getStructureString)
@@ -53,6 +52,55 @@ ol_ = Structure . el "ol" . concatMap (el "li" . getStructureString)
 
 code_ :: String -> Structure
 code_ = Structure . el "pre" . escape
+
+-- Content
+instance Semigroup Content where
+  (<>) (Content s) (Content t) = Content $ s <> t
+
+instance Monoid Content where
+  mempty = Content ""
+
+txt_ :: String -> Content
+txt_ = Content . escape
+
+link_ :: FilePath -> Content -> Content
+link_ path =
+  Content . elAttr "a" (makeAttributes [("href", escape path)]) . getContentString
+
+img_ :: FilePath -> Content
+img_ path = Content $ elAttrSelf "img" $ makeAttributes [("src", escape path)]
+
+b_ :: Content -> Content
+b_ = Content . el "b" . getContentString
+
+i_ :: Content -> Content
+i_ = Content . el "i" . getContentString
+
+-- Utilities
+getStructureString :: Structure -> String
+getStructureString (Structure str) = str
+
+getContentString :: Content -> String
+getContentString (Content str) = str
+
+el :: String -> String -> String
+el tag content =
+  "<" <> tag <> ">" <> content <> "</" <> tag <> ">"
+
+elAttr :: String -> String -> String -> String
+elAttr tag attrs content =
+  "<" <> tag <> " " <> attrs <> ">" <> content <> "</" <> tag <> ">"
+
+elAttrSelf :: String -> String -> String
+elAttrSelf tag attrs =
+  "<" <> tag <> " " <> attrs <> "/>"
+
+makeAttributes :: [(String, String)] -> String
+makeAttributes =
+  unwords . map (\(key, value) -> key <> surround value "\"")
+
+surround :: String -> String -> String
+surround target s = s <> target <> s
 
 escape :: String -> String
 escape =
