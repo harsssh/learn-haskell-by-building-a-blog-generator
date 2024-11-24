@@ -1,10 +1,11 @@
 module Main where
 
+import Control.Exception (bracket)
 import HsBlog qualified
 import OptParse
-import System.IO
 import System.Directory (doesFileExist)
 import System.Exit (exitFailure)
+import System.IO
 
 main :: IO ()
 main = do
@@ -13,27 +14,32 @@ main = do
     ConvertDir input output ->
       HsBlog.convertDirectory input output
     ConvertSingle input output -> do
-      (title, inputHandle) <-
-        case input of
-          Stdin -> pure ("", stdin)
-          InputFile file -> (,) file <$> openFile file ReadMode
+      let (title, withInputHandle) =
+            case input of
+              Stdin -> ("", ($ stdin))
+              InputFile file ->
+                (file, withFile file ReadMode)
 
-      outputHandle <-
-        case output of
-          Stdout -> pure stdout
-          OutputFile file -> do
-            exists <- doesFileExist file
-            shouldOpenFile <-
-              if exists
-                then confirm
-                else pure True
-            if shouldOpenFile
-              then openFile file WriteMode
-              else exitFailure
+      let withOutputHandle =
+            case output of
+              Stdout -> ($ stdout)
+              OutputFile file ->
+                bracket
+                  ( do
+                      exists <- doesFileExist file
+                      shouldOpenFile <-
+                        if exists
+                          then confirm
+                          else pure True
+                      if shouldOpenFile
+                        then openFile file WriteMode
+                        else exitFailure
+                  )
+                  hClose
 
-      HsBlog.convertSingle title inputHandle outputHandle
-      hClose inputHandle
-      hClose outputHandle
+      withInputHandle $ \inputHandle ->
+        withOutputHandle $ \outputHandle ->
+          HsBlog.convertSingle title inputHandle outputHandle
 
 confirm :: IO Bool
 confirm = do
